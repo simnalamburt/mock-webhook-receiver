@@ -1,8 +1,5 @@
-aiofiles==0.8.0
-httptools==0.4.0
-multidict==6.0.2
-sanic==22.3.1
-sanic-routing==22.3.0
-ujson==5.2.0
+dill==0.3.4
+multiprocess==0.70.12.2
+robyn==0.15.1
 uvloop==0.16.0
-websockets==10.3
+watchdog==2.1.3

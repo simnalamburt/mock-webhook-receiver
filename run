@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
-from sanic import Sanic
-from sanic.response import text
+from robyn import Robyn
 from asyncio import sleep
 from random import uniform
 
-app = Sanic('app')
+app = Robyn(__file__)
 
 MSG_ID = 0
 COUNT = 0
 
 @app.get('/')
 async def hello_world(_):
-    return text('Hello World!\n')
+    return 'Hello, world!\n'
 
-@app.post('/<code>/<delay>')
-@app.get('/<code>/<delay>')
-async def webhook_post(r, code, delay):
+@app.get('/:code/:delay')
+async def webhook_post(r):
     global MSG_ID, COUNT
+    code = r['params']['code']
+    delay = r['params']['delay']
 
     # Allocate msg_id
     MSG_ID += 1
@@ -42,7 +42,9 @@ async def webhook_post(r, code, delay):
 
     # Log message
     COUNT += 1
-    print(f'''{COUNT=:<8}{msg_id=:<8}{r.method:4}   {code=}{' (random)' if is_random_code else ''}   {delay=}{' (random)' if is_random_delay else ''}''')
-    return text('OK\n', status=code)
+    # TODO: support POST
+    print(f'''{COUNT=:<8}{msg_id=:<8}GET    {code=}{' (random)' if is_random_code else ''}   {delay=}{' (random)' if is_random_delay else ''}''')
+    # TODO: status code
+    return 'OK\n'
 
-app.run(port=5000, host='0.0.0.0', access_log=False)
+app.start(port=5000, url='0.0.0.0')
