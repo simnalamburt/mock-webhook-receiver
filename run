@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+from sanic import Sanic
+from sanic.response import text
+from asyncio import sleep
+from random import uniform
+
+app = Sanic('app')
+
+MSG_ID = 0
+COUNT = 0
+
+@app.get('/')
+async def hello_world(_):
+    return text('Hello World!\n')
+
+@app.post('/<code>/<delay>')
+@app.get('/<code>/<delay>')
+async def webhook_post(r, code, delay):
+    global MSG_ID, COUNT
+
+    # Allocate msg_id
+    MSG_ID += 1
+    msg_id = MSG_ID
+
+    if code == '_':
+        is_random_code = True
+        code = 200 if uniform(0, 1) > 0.3 else 500
+    else:
+        is_random_code = False
+        code = int(code)
+
+
+    if delay == '_':
+        is_random_delay = True
+        delay = uniform(0, 20)
+    else:
+        is_random_delay = False
+        delay = float(delay)
+
+    # Delay
+    await sleep(delay)
+
+    # Log message
+    COUNT += 1
+    print(f'''{COUNT=:<8}{msg_id=:<8}{r.method:4}   {code=}{' (random)' if is_random_code else ''}   {delay=}{' (random)' if is_random_delay else ''}''')
+    return text('OK\n', status=code)
+
+app.run(port=5000, host='0.0.0.0', access_log=False)
